@@ -333,7 +333,7 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
       }
 
     //Recorremos el array hasta llegar al ultimo, que será el mayor:
-    Node<T> actual = first.next;
+    Node<T> actual = first;
     while(actual.next != null) {
         actual = actual.next;
     }
@@ -371,7 +371,7 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
 
     @Override
     public boolean hasNext() {
-      return current.next != null;
+      return current != null;
     }
 
     @Override

@@ -177,7 +177,7 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   public static <T> SortedArraySet<T> copyOf(SortedSet<T> that) {
     //Creamos un nuevo conjunto:
-      int capacidad = Math.max(1, that.size());
+      int capacidad = that.size();
       SortedArraySet<T> copia = new SortedArraySet<>(that.comparator(), capacidad);
 
       //Insertamos los elementos uno a uno:
