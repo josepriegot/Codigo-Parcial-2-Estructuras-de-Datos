@@ -164,7 +164,12 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   public static <T extends Comparable<? super T>> SortedLinkedSet<T> copyOf(SortedSet<T> that) {
     SortedLinkedSetBuilder<T> builder = new SortedLinkedSetBuilder<>(that.comparator());
-    throw new UnsupportedOperationException("Not implemented yet");
+
+    for(T elemento : that) {
+        builder.append(elemento);
+    }
+
+    return builder.toSortedLinkedSet();
   }
 
   /**
@@ -182,7 +187,7 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -191,7 +196,7 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -241,7 +246,24 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+
+    //Si el elemento ya está, no hacemos nada:
+    if(finder.found) {
+        return;
+    }
+
+    //Si el elemento no está, el finder no habrá buscado ya cual es su sitio:
+    Node nuevo = new Node(element, finder.current);
+
+    //Si no hay elementos en el 'Set' o este nodo sería el primero:
+      if(finder.previous == null) {
+          first = nuevo;
+      } else {
+          finder.previous.next = nuevo;
+      }
+
+      size++;
   }
 
   /**
@@ -250,7 +272,9 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public boolean contains(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+
+    return finder.found;
   }
 
   /**
@@ -259,7 +283,22 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public void delete(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+
+    //Si el elemento no está, no se hace nada:
+      if(!finder.found) {
+          return;
+      }
+
+    //El finder nos dice el elemento en el que está y su anterior:
+      //Si es el primer elemeto:
+      if(finder.previous == null) {
+          first = finder.current.next;
+      } else {
+          finder.previous.next = finder.current.next;
+      }
+
+      size--;
   }
 
   /**
@@ -277,7 +316,10 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if (isEmpty()) {
+          throw new NoSuchElementException("minimum on empty set");
+      }
+    return first.element;
   }
 
   /**
@@ -286,7 +328,17 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public T maximum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if (isEmpty()) {
+          throw new NoSuchElementException("maximum on empty set");
+      }
+
+    //Recorremos el array hasta llegar al ultimo, que será el mayor:
+    Node<T> actual = first.next;
+    while(actual.next != null) {
+        actual = actual.next;
+    }
+
+    return actual.element;
   }
 
   /**
@@ -319,12 +371,18 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
 
     @Override
     public boolean hasNext() {
-      throw new UnsupportedOperationException("Not implemented yet");
+      return current.next != null;
     }
 
     @Override
     public T next() {
-      throw new UnsupportedOperationException("Not implemented yet");
+        if (isEmpty()) {
+            throw new NoSuchElementException("Empty set");
+        }
+
+        T elem = current.element;
+        current = current.next;
+        return elem;
     }
   }
 
@@ -410,7 +468,43 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
 
     SortedLinkedSetBuilder<T> builder = new SortedLinkedSet.SortedLinkedSetBuilder<>(comparator);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos las variables:
+    Iterator<T> it1 = sortedSet1.iterator();
+    Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Recorremos ambas listas:
+      while(elem1 != null && elem2 != null) {
+          int comparacion = comparator.compare(elem1, elem2);
+
+          if(comparacion < 0) {
+              builder.append(elem1);
+              elem1 = nextOrNull(it1);
+          } else if(comparacion > 0) {
+              builder.append(elem2);
+              elem2 = nextOrNull(it2);
+          } else {
+              builder.append(elem1);
+              elem1 = nextOrNull(it1);
+              elem2 = nextOrNull(it2);
+          }
+      }
+
+      //Añadimos lo que sobre de la lista 1:
+      while(elem1 != null) {
+          builder.append(elem1);
+          elem1 = nextOrNull(it1);
+      }
+
+      //Añadimos lo que sobre de la lista 2:
+      while(elem2 != null) {
+          builder.append(elem2);
+          elem2 = nextOrNull(it2);
+      }
+
+      return builder.toSortedLinkedSet();
   }
 
   /**
@@ -431,7 +525,29 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
 
     SortedLinkedSetBuilder<T> builder = new SortedLinkedSet.SortedLinkedSetBuilder<>(comparator);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos las variables:
+    Iterator<T> it1 = sortedSet1.iterator();
+    Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Recorremos ambas listas:
+    while(elem1 != null && elem2 != null) {
+        int comparacion = comparator.compare(elem1, elem2);
+
+        if(comparacion < 0) {
+            elem1 = nextOrNull(it1);
+        } else if(comparacion > 0) {
+            elem2 = nextOrNull(it2);
+        } else {
+            builder.append(elem1);
+            elem1 = nextOrNull(it1);
+            elem2 = nextOrNull(it2);
+        }
+    }
+
+    return builder.toSortedLinkedSet();
   }
 
   /**
@@ -452,6 +568,34 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
 
     SortedLinkedSetBuilder<T> builder = new SortedLinkedSet.SortedLinkedSetBuilder<>(comparator);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos las variables:
+    Iterator<T> it1 = sortedSet1.iterator();
+    Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Recorremos ambas listas:
+    while(elem1 != null && elem2 != null) {
+        int comparacion = comparator.compare(elem1, elem2);
+
+        if(comparacion < 0) {
+            builder.append(elem1);
+            elem1 = nextOrNull(it1);
+        } else if(comparacion > 0) {
+            elem2 = nextOrNull(it2);
+        } else {
+            elem1 = nextOrNull(it1);
+            elem2 = nextOrNull(it2);
+        }
+    }
+
+    //Añadimos los elementos que sobre de la lista 1:
+    while(elem1 != null) {
+        builder.append(elem1);
+        elem1 = nextOrNull(it1);
+    }
+
+    return builder.toSortedLinkedSet();
   }
 }

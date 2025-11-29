@@ -11,13 +11,11 @@ import java.util.NoSuchElementException;
  * The order of elements is defined by the provided comparator or their natural order if no comparator is provided.
  *
  * @param <T> Type of elements in set.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
   /*
    * INVARIANT:
-   *  - Elements in the array elements[0..size-1] are sorted in ascending order.
+   *  - Elements in the array elements[0...size-1] are sorted in ascending order.
    *  - The array contains no duplicate elements.
    *  - size is number of elements in set.
    */
@@ -96,7 +94,7 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    * @param comparator Comparator defining order of elements in this sorted set.
    */
   public static <T> SortedArraySet<T> empty(Comparator<T> comparator) {
-    return new SortedArraySet<T>(comparator, DEFAULT_INITIAL_CAPACITY);
+    return new SortedArraySet<>(comparator, DEFAULT_INITIAL_CAPACITY);
   }
 
   /**
@@ -178,7 +176,16 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    * @return a new SortedArraySet with same elements and order as {@code that}.
    */
   public static <T> SortedArraySet<T> copyOf(SortedSet<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos un nuevo conjunto:
+      int capacidad = Math.max(1, that.size());
+      SortedArraySet<T> copia = new SortedArraySet<>(that.comparator(), capacidad);
+
+      //Insertamos los elementos uno a uno:
+      for(T elemento : that) {
+          copia.append(elemento);
+      }
+
+      return copia;
   }
 
   /**
@@ -196,7 +203,7 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      return size == 0;
   }
 
   /**
@@ -205,7 +212,7 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -265,7 +272,29 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      Finder finder = new Finder(element);
+
+      //Si el elemento ya está:
+      if(finder.found) {
+          return;
+      }
+
+      //Si el elemento no está:
+      if(elements.length == size) {
+          //Si el array ya está lleno, duplicamos su tamaño:
+          ensureCapacity();
+      }
+
+      //Ahora, movemos los objetos hacia la derecha:
+      for(int i=size; i>finder.index; i--) {
+          elements[i] = elements[i-1];
+      }
+
+      //Ahora, insertamos el elemento en el sitio que nos inidca el 'Finder':
+      elements[finder.index] = element;
+
+      //Aumenta el tamaño del array:
+      size++;
   }
 
   /**
@@ -274,7 +303,8 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public boolean contains(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+    return finder.found;
   }
 
   /**
@@ -283,7 +313,23 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public void delete(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+
+    //Si el elemento no está, no se borra nada:
+      if(!finder.found) {
+          return;
+      }
+
+    //Si ha encontrado el elemento que queremos borrar:
+    for(int i= finder.index; i<size-1; i++) {
+        elements[i] = elements[i+1];
+    }
+
+    //Disminuye el tamaño del array:
+    size--;
+
+    //Eliminamos el último elemento:
+    elements[size] = null;
   }
 
   /**
@@ -292,7 +338,12 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Borramos cada elemento:
+    for(int i=0; i<size; i++) {
+        elements[i] = null;
+    }
+
+    size = 0;
   }
 
   /**
@@ -301,7 +352,11 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if (isEmpty()) {
+          throw new NoSuchElementException("minimum on empty set");
+      }
+
+    return elements[0];
   }
 
   /**
@@ -310,7 +365,11 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
    */
   @Override
   public T maximum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if (isEmpty()) {
+          throw new NoSuchElementException("maximum on empty set");
+      }
+
+    return elements[size-1];
   }
 
   /**
@@ -342,11 +401,18 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
     }
 
     public boolean hasNext() {
-      throw new UnsupportedOperationException("Not implemented yet");
+      //Si el indice 'current' es menor que el tamaño, sí quedan elementos.
+      return current < size;
     }
 
     public T next() {
-      throw new UnsupportedOperationException("Not implemented yet");
+      if(!hasNext()) {
+          throw new NoSuchElementException();
+      }
+
+      T elemento = elements[current];
+      current++;
+      return elemento;
     }
   }
 
@@ -400,7 +466,45 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
     }
     Comparator<T> comparator = sortedSet1.comparator();
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    SortedArraySet<T> union = new SortedArraySet<>(comparator);
+
+    //Usamos 'iterator' para ir elemento a elemento en cada array:
+      Iterator<T> it1 = sortedSet1.iterator();
+      Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Con un bucle, recorremos todos los elementos:
+      while(elem1 != null && elem2 != null) {
+          int comparacion = comparator.compare(elem1, elem2);
+
+          if(comparacion < 0) {
+              union.append(elem1);
+              elem1 = nextOrNull(it1);
+          } else if(comparacion > 0) {
+              union.append(elem2);
+              elem2 = nextOrNull(it2);
+          } else {
+              union.append(elem1);
+              elem1 = nextOrNull(it1);
+              elem2 = nextOrNull(it2);
+          }
+      }
+
+      //Añadimos lo que falte del array 1:
+      while (elem1 != null) {
+          union.append(elem1);
+          elem1 = nextOrNull(it1);
+      }
+
+      //Añadimos lo que falte del array 2:
+      while (elem2 != null) {
+          union.append(elem2);
+          elem2 = nextOrNull(it2);
+      }
+
+      return union;
   }
 
   /**
@@ -423,7 +527,35 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
     }
     Comparator<T> comparator = sortedSet1.comparator();
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos el array nuevo:
+    int capacidad = Math.min(sortedSet1.size(), sortedSet2.size());
+    SortedArraySet<T> interseccion = new SortedArraySet<>(sortedSet1.comparator(), Math.max(1, capacidad));
+
+    //Creamos los elementos por los que vamos a ir avanzando:
+    Iterator<T> it1 = sortedSet1.iterator();
+    Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Avanzamos en cada array:
+    while(elem1 != null && elem2 != null) {
+        int comparacion = comparator.compare(elem1, elem2);
+
+        if(comparacion < 0) {
+            //El elem1 es más pequeño:
+            elem1 = nextOrNull(it1);
+        } else if(comparacion > 0) {
+            //El elem2 es más pequeño:
+            elem2 = nextOrNull(it2);
+        } else {
+            interseccion.append(elem1);
+            elem1 = nextOrNull(it1);
+            elem2 = nextOrNull(it2);
+        }
+    }
+
+    return interseccion;
   }
 
   /**
@@ -447,6 +579,38 @@ public class SortedArraySet<T> extends AbstractSortedSet<T> implements SortedSet
     }
     Comparator<T> comparator = sortedSet1.comparator();
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Creamos el nuevo array:
+    int capacidad = sortedSet1.size();
+    SortedArraySet<T> diferencia = new SortedArraySet<>(comparator, Math.max(1, capacidad));
+
+    //Creamos las variables:
+    Iterator<T> it1 = sortedSet1.iterator();
+    Iterator<T> it2 = sortedSet2.iterator();
+
+    T elem1 = nextOrNull(it1);
+    T elem2 = nextOrNull(it2);
+
+    //Recorremos el array:
+    while(elem1 != null && elem2 != null) {
+        int comparacion = comparator.compare(elem1, elem2);
+
+        if(comparacion < 0) {
+            diferencia.append(elem1);
+            elem1 = nextOrNull(it1);
+        } else if(comparacion > 0) {
+            elem2 = nextOrNull(it2);
+        } else {
+            elem1 = nextOrNull(it1);
+            elem2 = nextOrNull(it2);
+        }
+    }
+
+    //Añadimos los elementos que nos sobren del primer array:
+    while(elem1 != null) {
+        diferencia.append(elem1);
+        elem1 = nextOrNull(it1);
+    }
+
+    return diferencia;
   }
 }
