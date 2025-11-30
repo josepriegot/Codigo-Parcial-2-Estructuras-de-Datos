@@ -92,7 +92,32 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    * @return skew heap with elements in nodes
    */
   private static <T> MaxiphobicHeap<T> merge(Comparator<T> comparator, ArrayList<Node<T>> nodes) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Aqui recibimos una lista en la que debemos aplicar un 'MaxiphobicHeap':
+    if(nodes.isEmpty()) {
+        return new MaxiphobicHeap<>(comparator);
+    }
+
+    //Usamos una variable auxiliar:
+    MaxiphobicHeap<T> aux = new MaxiphobicHeap<>(comparator);
+
+    int i = 0;
+
+    //Vamos por parejas de nodos:
+    while(i < nodes.size()-1) {
+        Node<T> n1 = nodes.get(i);
+        Node<T> n2 = nodes.get(i+1);
+
+        //Los fusionamos y los añadimos:
+        nodes.append(aux.merge(n1,n2));
+
+        //Avanzamos 2 posiciones:
+        i = i+2;
+    }
+
+    //El último nodo sería la raíz del arbol:
+      Node<T> raiz = nodes.get(nodes.size()-1);
+
+    return new MaxiphobicHeap<>(comparator, raiz);
   }
 
   /**
@@ -166,7 +191,11 @@ public class MaxiphobicHeap<T> implements Heap<T> {
 
   // copies a tree
   private static <T> Node<T> copyOf(Node<T> node) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(node == null) {
+        return null;
+    }
+
+    return new Node<>(node.element, node.weight, copyOf(node.left), copyOf(node.right));
   }
 
   /**
@@ -175,7 +204,7 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public Comparator<T> comparator() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return comparator;
   }
 
   /**
@@ -184,7 +213,7 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return root == null;
   }
 
   // returns weight of a node
@@ -198,7 +227,7 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return weight(root);
   }
 
   /**
@@ -207,7 +236,7 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    root = null;
   }
 
   /**
@@ -216,14 +245,54 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> nuevo = new Node<>(element);
+    root = merge(root, nuevo);
   }
 
   /**
    * Merges two maxiphobic heaps.
    */
   private Node<T> merge(Node<T> node1, Node<T> node2) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Si uno de los dos es nulo, se devuelve al otro:
+    if(node1 == null) return node2;
+    if(node2 == null) return node1;
+
+    //Miramos si 'node1' es el menor:
+    if(comparator.compare(node2.element, node1.element) < 0) {
+        Node<T> aux = node1;
+        node1 = node2;
+        node2 = aux;
+    }
+
+    //Sacamos a los 3 candidatos:
+    Node<T> izq = node1.left;
+    Node<T> der = node1.right;
+    Node<T> otro = node2;
+
+    //Calculamos los pesos:
+    int pesoIzq = weight(izq);
+    int pesoDer = weight(der);
+    int pesoOtro = weight(otro);
+
+    //Si el de la izquierda es el más pesado:
+    if(pesoIzq >= pesoDer && pesoIzq >= pesoOtro) {
+        node1.right = merge(der, otro);
+    } //Si el de la derecha es el más pesado:
+      else if(pesoDer >= pesoIzq && pesoDer >= pesoOtro) {
+        //Lo pasamos a la izquierda y fusionamos los otros:
+        node1.left = der;
+        node1.right = merge(izq,otro);
+    } //Si el otro es el más pesado:
+      else {
+        //Lo pasamos a la izquierda y fusionamos los otros:
+        node1.left = otro;
+        node1.right = merge(izq, der);
+    }
+
+    //Actualizamos el peso del nodo resultante:
+    node1.weight = 1 + weight(node1.left) + weight(node1.right);
+
+    return node1;
   }
 
   /**
@@ -234,7 +303,11 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) {
+        throw new EmptyHeapException("minimum on empty heap");
+    }
+
+    return root.element;
   }
 
   /**
@@ -245,7 +318,12 @@ public class MaxiphobicHeap<T> implements Heap<T> {
    */
   @Override
   public void deleteMinimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) {
+        throw new EmptyHeapException("deleteMinimum on empty heap");
+    }
+
+    //Borramos la raiz fusionando a sus dos hijos:
+    root = merge(root.left, root.right);
   }
 
   /**
