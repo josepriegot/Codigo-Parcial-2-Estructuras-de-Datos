@@ -61,7 +61,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public Comparator<T> comparator() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return heap.comparator();
   }
 
   /**
@@ -70,7 +70,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return heap.size();
   }
   
   /**
@@ -79,7 +79,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return heap.isEmpty();
   }
 
   /**
@@ -88,7 +88,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    heap.clear();
   }
 
   /**
@@ -98,7 +98,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public void enqueue(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    heap.insert(element);
   }
 
   /**
@@ -109,7 +109,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public T first() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return heap.minimum();
   }
 
   /**
@@ -121,7 +121,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public void dequeue() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    heap.deleteMinimum();
   }
 
   /**
