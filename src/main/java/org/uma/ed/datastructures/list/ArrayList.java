@@ -135,7 +135,17 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    * @return a new ArrayList with same elements and order as {@code that}.
    */
   public static <T> ArrayList<T> copyOf(ArrayList<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(that.isEmpty()) {
+          return empty();
+      }
+
+      ArrayList<T> nuevo = new ArrayList<>(that.size());
+
+      for(int i=0; i< that.size(); i++) {
+          nuevo.append(that.get(i));
+      }
+
+      return nuevo;
   }
 
   /**
@@ -147,7 +157,17 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    * @return a new ArrayList with same elements and order as {@code that}.
    */
   public static <T> ArrayList<T> copyOf(List<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(that.isEmpty()) {
+          return empty();
+      }
+
+      ArrayList<T> nuevo = new ArrayList<>(that.size());
+
+      for(T e : that) {
+          nuevo.append(e);
+      }
+
+      return nuevo;
   }
 
   /**
@@ -156,7 +176,7 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -165,7 +185,7 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -197,7 +217,8 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public T get(int index) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+    return elements[index];
   }
 
   /**
@@ -208,7 +229,8 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void set(int index, T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+    elements[index] = element;
   }
 
   /**
@@ -217,7 +239,9 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void append(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    ensureCapacity();
+    elements[size] = element;
+    size++;
   }
 
   /**
@@ -226,7 +250,7 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void prepend(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    insert(0, element);
   }
 
   /**
@@ -237,7 +261,18 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void insert(int index, T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(index < 0 || index > size) {
+        throw new ListException("Invalid index " + index);
+    }
+
+    ensureCapacity();
+
+    for(int i=size; i>index; i--) {
+        elements[i] = elements[i-1];
+    }
+
+    elements[index] = element;
+    size++;
   }
 
   /**
@@ -248,7 +283,14 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void delete(int index) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+
+    for(int i=index; i<size-1; i++) {
+        elements[i] = elements[i+1];
+    }
+
+    elements[size-1] = null;
+    size--;
   }
 
   /**
@@ -257,7 +299,11 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    for(int i=0; i<size; i++) {
+        elements[i] = null;
+    }
+
+    size = 0;
   }
 
   /**

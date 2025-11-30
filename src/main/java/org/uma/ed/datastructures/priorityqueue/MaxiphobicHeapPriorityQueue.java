@@ -9,7 +9,7 @@ import java.util.Comparator;
  *
  * @param <T>
  *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.   
+ * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> implements PriorityQueue<T> {
   private final MaxiphobicHeap<T> heap;
@@ -52,7 +52,9 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
   }
 
   public static <T> MaxiphobicHeapPriorityQueue<T> copyOf(MaxiphobicHeapPriorityQueue<T> queue) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      // Copiamos el heap interno y creamos una nueva cola
+      MaxiphobicHeap<T> heapCopy = MaxiphobicHeap.copyOf(queue.heap);
+      return new MaxiphobicHeapPriorityQueue<>(heapCopy);
   }
 
   /**
@@ -72,7 +74,7 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
   public int size() {
     return heap.size();
   }
-  
+
   /**
    * {@inheritDoc}
    * <p> Time complexity: O(1)
@@ -109,6 +111,9 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    */
   @Override
   public T first() {
+      if(isEmpty()) {
+          throw new EmptyPriorityQueueException("empty");
+      }
     return heap.minimum();
   }
 
@@ -116,11 +121,14 @@ public class MaxiphobicHeapPriorityQueue<T> extends AbstractPriorityQueue<T> imp
    * {@inheritDoc} Position of new element in queue depends on its priority. The less the value of the element, the
    * higher its priority.
    * <p> Time complexity: O(log n)
-   * 
+   *
    * @throws <code>EmptyPriorityQueueException</code> if queue stores no element.
    */
   @Override
   public void dequeue() {
+    if(isEmpty()) {
+        throw new EmptyPriorityQueueException("empty");
+    }
     heap.deleteMinimum();
   }
 

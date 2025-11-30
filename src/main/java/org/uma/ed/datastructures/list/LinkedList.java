@@ -7,8 +7,6 @@ import java.util.NoSuchElementException;
  * LinkedList is a class that implements a List interface using a linked structure to store elements.
  *
  * @param <T> Type of elements in list.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class LinkedList<T> extends AbstractList<T> implements List<T> {
   /**
@@ -116,7 +114,13 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    * @return a new LinkedList with same elements and order as {@code that}.
    */
   public static <T> LinkedList<T> copyOf(List<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LinkedList<T> nuevo = new LinkedList<>();
+
+    for(T elem : that) {
+        nuevo.append(elem);
+    }
+
+    return nuevo;
   }
 
   /**
@@ -125,7 +129,7 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -134,7 +138,7 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -175,7 +179,9 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public T get(int index) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+
+    return atIndex(index).element;
   }
 
   /**
@@ -186,7 +192,9 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void set(int index, T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+
+    atIndex(index).element = element;
   }
 
   /**
@@ -195,7 +203,14 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void append(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> nuevo = new Node<>(element, null);
+    if(isEmpty()) {
+        first = nuevo;
+    } else {
+        last.next = nuevo;
+    }
+    size++;
+    last = nuevo;
   }
 
   /**
@@ -204,7 +219,11 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void prepend(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = new Node<>(element, first);
+    if(last == null) {
+        last = first;
+    }
+    size++;
   }
 
   /**
@@ -215,7 +234,20 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void insert(int index, T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(index < 0 || index > size) {
+          throw new ListException("Invalid index");
+      }
+
+      if(index == 0) {
+          prepend(element);
+      } else if(index == size) {
+          append(element);
+      } else {
+          Node<T> anterior = atIndex(index-1);
+          Node<T> nuevo = new Node<>(element, anterior.next);
+          anterior.next = nuevo;
+          size++;
+      }
   }
 
   /**
@@ -226,7 +258,22 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void delete(int index) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    validateIndex(index);
+
+    if(index == 0) {
+        first = first.next;
+        if(first == null) {
+            last = null;
+        }
+        size--;
+    } else {
+        Node<T> anterior = atIndex(index-1);
+        anterior.next = anterior.next.next;
+        if(index == size-1) {
+            last = anterior;
+        }
+        size--;
+    }
   }
 
   /**
@@ -235,7 +282,9 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = null;
+    last = null;
+    size = 0;
   }
 
   /**

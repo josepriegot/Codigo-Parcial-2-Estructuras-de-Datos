@@ -6,8 +6,6 @@ import java.util.Comparator;
  * Priority queue implemented as a sorted linked structure.
  *
  * @param <T> Type of elements.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements PriorityQueue<T> {
   private static final class Node<E> {
@@ -113,7 +111,7 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -122,7 +120,7 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -132,7 +130,45 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public void enqueue(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(element == null) {
+        return;
+    }
+
+    //Si la lista está vacia:
+    if(isEmpty()) {
+        first = new Node<>(element, null);
+        size++;
+        return;
+    }
+
+      //Si el nuevo elemento es menor (va antes) que el primero:
+      if(comparator().compare(first.element, element) > 0) {
+          Node<T> nuevo = new Node<>(element, first);
+          first = nuevo;
+          size++;
+          return;
+      }
+
+    //Recorremos cada nodo buscando el sitio donde iría el nuevo elemento:
+    Node<T> actual = first.next;
+    Node<T> anterior = first;
+
+    while(actual != null) {
+        if(comparator().compare(actual.element, element) >= 0) {
+            Node<T> nuevo = new Node<>(element, actual);
+            anterior.next = nuevo;
+            size++;
+            return;
+        } else {
+            anterior = actual;
+            actual = actual.next;
+        }
+    }
+
+    //Si hemos llegado al final y no va antes que nadie, significa que va el ultimo:
+    Node<T> nuevo = new Node<>(element, null);
+    anterior.next = nuevo;
+    size++;
   }
 
   /**
@@ -143,7 +179,10 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public T first() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) {
+          throw new EmptyPriorityQueueException("first on empty priority queue");
+      }
+    return first.element;
   }
 
   /**
@@ -154,7 +193,12 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public void dequeue() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) {
+        throw new EmptyPriorityQueueException("dequeue on empty priority queue");
+    }
+
+    first = first.next;
+    size--;
   }
 
   /**
@@ -163,7 +207,8 @@ public class LinkedPriorityQueue<T> extends AbstractPriorityQueue<T> implements 
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = null;
+    size = 0;
   }
 
   /**
