@@ -7,8 +7,6 @@ import org.uma.ed.datastructures.list.ArrayList;
  * Heap implemented using weight biased leftist heap-ordered binary trees.
  *
  * @param <T> Type of elements in heap.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class WBLeftistHeap<T> implements Heap<T> {
   private static final class Node<E> {
@@ -78,7 +76,27 @@ public class WBLeftistHeap<T> implements Heap<T> {
    * @return skew heap with elements in nodes
    */
   private static <T> WBLeftistHeap<T> merge(Comparator<T> comparator, ArrayList<Node<T>> nodes) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    //Miramos si la lista esta vacia:
+    if(nodes.isEmpty()) {
+        return new WBLeftistHeap<>(comparator);
+    }
+
+    WBLeftistHeap<T> aux = new WBLeftistHeap<>(comparator);
+
+    int i = 0;
+
+    while(i < nodes.size()-1) {
+        Node<T> n1 = nodes.get(i);
+        Node<T> n2 = nodes.get(i+1);
+
+        nodes.append(aux.merge(n1,n2));
+
+        i = i+2;
+    }
+
+    Node<T> raiz = nodes.get(nodes.size()-1);
+
+    return new WBLeftistHeap<>(comparator, raiz);
   }
 
   /**
@@ -154,7 +172,11 @@ public class WBLeftistHeap<T> implements Heap<T> {
 
   // copies a tree
   private static <T> Node<T> copyOf(Node<T> node) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(node == null) {
+        return null;
+    }
+
+    return new Node<>(node.element, node.weight, copyOf(node.left), copyOf(node.right));
   }
 
   /**
@@ -163,7 +185,7 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public Comparator<T> comparator() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return comparator;
   }
 
   /**
@@ -172,7 +194,7 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return root == null;
   }
 
   // returns weight of a node
@@ -186,7 +208,7 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return weight(root);
   }
 
   /**
@@ -195,7 +217,7 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    root = null;
   }
 
   /**
@@ -204,14 +226,39 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> nuevo = new Node<>(element);
+    root = merge(root, nuevo);
   }
 
   /* Merges two heap trees along their right spines.
    * Returns merged heap. Reuses nodes during merge
    */
   private Node<T> merge(Node<T> node1, Node<T> node2) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(node1 == null) {
+        return node2;
+    }
+
+    if(node2 == null) {
+        return node1;
+    }
+
+    if(comparator.compare(node1.element, node2.element) > 0) {
+        Node<T> aux = node1;
+        node1 = node2;
+        node2 = aux;
+    }
+
+    node1.right = merge(node1.right, node2);
+
+    if(weight(node1.right) > weight(node1.left)) {
+        Node<T> aux = node1.left;
+        node1.left = node1.right;
+        node1.right = aux;
+    }
+
+    node1.weight = 1 + weight(node1.left) + weight(node1.right);
+
+    return node1;
   }
 
   /**
@@ -222,7 +269,10 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) {
+        throw new EmptyHeapException("minimum on empty heap");
+    }
+    return root.element;
   }
 
   /**
@@ -233,7 +283,11 @@ public class WBLeftistHeap<T> implements Heap<T> {
    */
   @Override
   public void deleteMinimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) {
+          throw new EmptyHeapException("deleteMinimum on empty heap");
+      }
+
+    root = merge(root.left, root.right);
   }
 
   /**
