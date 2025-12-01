@@ -120,7 +120,8 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    * @return a new AVLSet with same elements as {@code that}.
    */
   public static <T> AVLSet<T> copyOf(AVLSet<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    AVL<T> copia = AVL.copyOf(that.avlTree);
+    return new AVLSet<>(copia);
   }
 
   /**
@@ -132,7 +133,11 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    * @return a new AVLSet with same elements as {@code that}.
    */
   public static <T> AVLSet<T> copyOf(SortedSet<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    AVLSet<T> copia = new AVLSet<>(that.comparator());
+    for(T elemento : that) {
+        copia.insert(elemento);
+    }
+    return copia;
   }
 
   /**
@@ -141,7 +146,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public Comparator<T> comparator() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return avlTree.comparator();
   }
 
   /**
@@ -150,7 +155,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      return avlTree.isEmpty();
   }
 
   /**
@@ -159,7 +164,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return avlTree.size();
   }
 
   /**
@@ -168,7 +173,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    avlTree.insert(element);
   }
 
   /**
@@ -177,7 +182,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public boolean contains(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return avlTree.contains(element);
   }
 
   /**
@@ -186,7 +191,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public void delete(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    avlTree.delete(element);
   }
 
   /**
@@ -195,7 +200,7 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    avlTree.clear();
   }
 
   /**
@@ -204,7 +209,10 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (isEmpty()) {
+        throw new NoSuchElementException("maximum on empty set");
+    }
+    return avlTree.minimum();
   }
 
   /**
@@ -213,7 +221,10 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public T maximum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (isEmpty()) {
+        throw new NoSuchElementException("maximum on empty set");
+    }
+    return avlTree.maximum();
   }
 
   /**
@@ -224,6 +235,6 @@ public class AVLSet<T> extends AbstractSortedSet<T> implements SortedSet<T> {
    */
   @Override
   public Iterator<T> iterator() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return avlTree.inOrder().iterator();
   }
 }
