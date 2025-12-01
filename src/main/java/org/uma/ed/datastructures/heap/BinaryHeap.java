@@ -10,13 +10,11 @@ import java.util.Comparator;
  * The heap is always kept complete by adding elements to the bottom level of the tree at the leftmost open space.
  *
  * @param <T> Type of elements in heap.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class BinaryHeap<T> implements Heap<T> {
   /*
    * INVARIANT:
-   * - The array elements[0..size-1] represents a heap-ordered binary tree.
+   * - The array elements[0...size-1] represents a heap-ordered binary tree.
    * - The tree's root is at index 0.
    * - For any node at index i:
    *   - The parent is at index (i-1)/2.
