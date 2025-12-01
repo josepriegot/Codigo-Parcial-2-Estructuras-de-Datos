@@ -7,8 +7,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Sorted dictionaries implemented using a sorted linked structure.
- *
- * @author Pepe Gallardo, Data Structures, Grado en Informática. UMA.
  */
 public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V> implements SortedDictionary<K, V> {
   private static final class Node<K, V> {
@@ -168,7 +166,7 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -177,7 +175,7 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -221,7 +219,33 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public void insert(Entry<K, V> entry) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(entry == null) {
+        return;
+    }
+
+    Finder finder = new Finder(entry.key());
+
+    if(finder.found) {
+        finder.current.entry = entry;
+    } else {
+        Node<K,V> nuevo = new Node<>(entry, null);
+
+        if(finder.previous == null) {
+            nuevo.next = first;
+            first = nuevo;
+            if(last == null) {
+                last = nuevo;
+            }
+        } else {
+            finder.previous.next = nuevo;
+            nuevo.next = finder.current;
+            if(finder.current == null) {
+                last = nuevo;
+            }
+        }
+
+        size++;
+    }
   }
 
   /**
@@ -230,7 +254,12 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public V valueOf(K key) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(key);
+    if(finder.found) {
+        return finder.current.entry.value();
+    } else {
+        return null;
+    }
   }
 
   /**
@@ -239,7 +268,8 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public boolean isDefinedAt(K key) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(key);
+    return finder.found;
   }
 
   /**
@@ -248,7 +278,23 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public void delete(K key) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(key);
+    if(!finder.found) {
+        return;
+    }
+
+    if(finder.previous == null) {
+        first = finder.current.next;
+        if(first == null) {
+            last = null;
+        }
+    } else {
+        finder.previous.next = finder.current.next;
+        if(finder.current == last) {
+            last = finder.previous;
+        }
+    }
+    size--;
   }
 
   /**
@@ -257,7 +303,9 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = null;
+    last = null;
+    size = 0;
   }
 
   /**
@@ -266,7 +314,8 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public Entry<K, V> minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new NoSuchElementException("minimum on empty set");
+    return first.entry;
   }
 
   /**
@@ -275,7 +324,8 @@ public class SortedLinkedDictionary<K, V> extends AbstractSortedDictionary<K, V>
    */
   @Override
   public Entry<K, V> maximum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new NoSuchElementException("maximum on empty set");
+    return last.entry;
   }
 
   /**
