@@ -136,7 +136,14 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    * @return a new ArrayQueue with same elements and order as {@code that}.
    */
   public static <T> ArrayQueue<T> copyOf(ArrayQueue<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    ArrayQueue<T> copia = new ArrayQueue<>();
+
+    for(T elem : that.elements()) {
+        copia.ensureCapacity();
+        copia.enqueue(elem);
+    }
+
+    return copia;
   }
 
   /**
@@ -148,7 +155,21 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    * @return a new ArrayQueue with same elements and order as {@code that}.
    */
   public static <T> ArrayQueue<T> copyOf(Queue<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    ArrayQueue<T> copia = new ArrayQueue<>();
+    ArrayQueue<T> aux = new ArrayQueue<>();
+
+    while(!that.isEmpty()) {
+        copia.enqueue(that.first());
+        aux.enqueue(that.first());
+        that.dequeue();
+    }
+
+    while(!aux.isEmpty()) {
+        that.enqueue(aux.first());
+        aux.dequeue();
+    }
+
+    return copia;
   }
 
   /**
@@ -157,7 +178,7 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -166,7 +187,7 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -203,7 +224,12 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void enqueue(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    ensureCapacity();
+
+    //Insertamos el ultimo en la ultima posicion o al principio si no nos queda hueco libre:
+    last = (last+1) % elements.length;
+    elements[last] = element;
+    size++;
   }
 
   /**
@@ -214,7 +240,9 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public T first() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new EmptyQueueException("first on empty queue");
+
+    return elements[first];
   }
 
   /**
@@ -225,7 +253,11 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void dequeue() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new EmptyQueueException("dequeue on empty queue");
+
+    elements[first] = null;
+    first = (first+1) % elements.length;
+    size--;
   }
 
   /**
@@ -234,7 +266,13 @@ public class ArrayQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    for(int i=0; i<size; i++) {
+        elements[(first+i) % elements.length] = null;
+    }
+
+    first = 0;
+    last = -1;
+    size = 0;
   }
 
   /**
