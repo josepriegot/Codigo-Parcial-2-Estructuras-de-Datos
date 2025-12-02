@@ -185,7 +185,7 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -194,7 +194,7 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -233,7 +233,22 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public void insert(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Finder finder = new Finder(element);
+    if(finder.found) {
+        finder.current.occurrences++;
+    } else {
+        Node<T> nuevo = new Node<>(element, 1, null);
+        if(finder.previous == null) {
+            first = nuevo;
+        } else {
+            finder.previous.next = nuevo;
+        }
+
+        if(finder.current == null) {
+            last = nuevo;
+        }
+    }
+    size++;
   }
 
   /**
@@ -242,7 +257,26 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public void delete(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new NoSuchElementException("delete on empty set");
+    Finder finder = new Finder(element);
+    if(finder.found) {
+        if(finder.current.occurrences > 1) {
+            finder.current.occurrences--;
+        } else {
+            if(finder.previous == null) {
+                first = finder.current.next;
+                if(first == null) {
+                    last = null;
+                }
+            } else {
+                finder.previous.next = finder.current.next;
+                if(finder.current == last) {
+                    last = finder.previous;
+                }
+            }
+        }
+        size--;
+    }
   }
 
   /**
@@ -251,7 +285,9 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    size = 0;
+    first = null;
+    last = null;
   }
 
   /**
@@ -260,7 +296,13 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public int occurrences(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) throw new NoSuchElementException("occurrences on empty set");
+    Finder finder = new Finder(element);
+    if(finder.found) {
+        return finder.current.occurrences;
+    } else {
+        return 0;
+    }
   }
 
   /**
@@ -269,7 +311,8 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public T minimum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) throw new NoSuchElementException("minimum on empty set");
+    return first.element;
   }
 
   /**
@@ -278,7 +321,8 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
    */
   @Override
   public T maximum() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) throw new NoSuchElementException("maximum on empty set");
+      return last.element;
   }
 
   @Override
@@ -304,7 +348,14 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
     }
 
     public T next() {
-      throw new UnsupportedOperationException("Not implemented yet");
+      if(!hasNext()) throw new NoSuchElementException();
+      T actual = current.element;
+      returned++;
+      if(returned == current.occurrences) {
+          current = current.next;
+          returned = 0;
+      }
+      return actual;
     }
   }
 
@@ -333,23 +384,145 @@ public class SortedLinkedBag<T> extends AbstractSortedBag<T> implements SortedBa
 
   // We use that the argument is iterated in order
   public void union(SortedLinkedBag<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> actual1 = this.first;
+    Node<T> actual2 = that.first;
+    Node<T> anterior1 = null;
+
+    while(actual2 != null) {
+        //Si se acaba nuestra lista o si el elemento nuevo no está:
+        if(actual1 == null || comparator.compare(actual1.element, actual2.element) > 0) {
+            Node<T> nuevo = new Node<>(actual2.element, actual2.occurrences, actual1);
+
+            //Si es el primero:
+            if(anterior1 == null) {
+                this.first = nuevo;
+            } else {
+                anterior1.next = nuevo;
+            }
+
+            //Aumenta el numero de veces que aparezca el otro:
+            this.size += actual2.occurrences;
+
+            //Si es el último:
+            if(actual1 == null) {
+                this.last = nuevo;
+            }
+
+            //El 'actual1' no se mueve porque es mayor.
+            anterior1 = nuevo;
+            actual2 = actual2.next;
+        }
+        //Si son iguales:
+        else if(comparator.compare(actual1.element, actual2.element) == 0) {
+            actual1.occurrences += actual2.occurrences;
+            this.size += actual2.occurrences;
+
+            //Avanzamos todos:
+            anterior1 = actual1;
+            actual1 = actual1.next;
+            actual2 = actual2.next;
+        }
+        //Si el nuestro es menor:
+        else {
+            anterior1 = actual1;
+            actual1 = actual1.next;
+        }
+    }
   }
 
-  public void intersection(Bag<T> bag) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+  /* public void intersection(Bag<T> bag) {
+      Node<T> actual = first;
+      Node<T> anterior = null;
+
+    for(T elem : this) {
+        int comparacion = comparator.compare(actual.element, elem);
+    }
+  } */
 
   public void intersection(SortedLinkedBag<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> actual1 = this.first;
+    Node<T> actual2 = that.first;
+    Node<T> anterior = null;
+
+    while(actual2 != null && actual1 != null) {
+        if(comparator.compare(actual1.element, actual2.element) == 0) {
+            size = size - actual1.occurrences;
+            actual1.occurrences = Math.min(actual1.occurrences, actual2.occurrences);
+            size = size + actual1.occurrences;
+
+            anterior = actual1;
+            actual1 = actual1.next;
+            actual2 = actual2.next;
+        } else if(comparator.compare(actual1.element, actual2.element) < 0) {
+            size -= actual1.occurrences;
+
+            if(anterior == null) {
+                this.first = actual1.next;
+            } else {
+                anterior.next = actual1.next;
+            }
+
+            actual1 = actual1.next;
+        } else {
+            actual2 = actual2.next;
+        }
+    }
+
+    while(actual1 != null) {
+        this.size -= actual1.occurrences;
+        if(anterior == null) {
+            this.first = actual1.next;
+        } else {
+            anterior.next = actual1.next;
+        }
+        actual1 = actual1.next;
+    }
+    this.last = anterior;
   }
 
   public void difference(Bag<T> bag) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    for(T e : bag) {
+        delete(e);
+    }
   }
 
   // We use that argument iterates in order
   public void difference(SortedLinkedBag<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> actual1 = this.first;
+    Node<T> actual2 = that.first;
+    Node<T> anterior1 = null;
+
+    while(actual2 != null) {
+        if(actual1 != null) {
+            int comparacion = comparator().compare(actual1.element, actual2.element);
+
+            if(comparacion == 0) {
+                size -= actual2.occurrences;
+                actual1.occurrences -= actual2.occurrences;
+
+                if(actual1.occurrences == 0) {
+                    if(anterior1 == null) {
+                        this.first = actual1.next;
+                        if(this.first == null) last = null;
+                    } else {
+                        anterior1.next = actual1.next;
+                        if(anterior1.next == null) last = anterior1;
+                    }
+
+                    actual1 = actual1.next;
+                    actual2 = actual2.next;
+                } else {
+                    anterior1 = actual1;
+                    actual1 = actual1.next;
+                    actual2 = actual2.next;
+                }
+            } else if(comparacion < 0) {
+                anterior1 = actual1;
+                actual1 = actual1.next;
+            } else {
+                actual2 = actual2.next;
+            }
+        }
+    }
   }
 }
