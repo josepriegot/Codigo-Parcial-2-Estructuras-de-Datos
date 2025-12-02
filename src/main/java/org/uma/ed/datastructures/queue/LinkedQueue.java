@@ -105,7 +105,13 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    * @return a new LinkedQueue with same elements and order as {@code that}.
    */
   public static <T> LinkedQueue<T> copyOf(LinkedQueue<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LinkedQueue<T> copia = new LinkedQueue<>();
+
+    for(T elem : that.elements()) {
+        copia.enqueue(elem);
+    }
+
+    return copia;
   }
 
   /**
@@ -117,7 +123,23 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    * @return a new LinkedQueue with same elements and order as {@code that}.
    */
   public static <T> LinkedQueue<T> copyOf(Queue<T> that) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LinkedQueue<T> copia = new LinkedQueue<>();
+    LinkedQueue<T> aux = new LinkedQueue<>();
+
+    while(!that.isEmpty()) {
+        T elem = that.first();
+        that.dequeue();
+
+        copia.enqueue(elem);
+        aux.enqueue(elem);
+    }
+
+    while(!aux.isEmpty()) {
+        that.enqueue(aux.first.element);
+        aux.dequeue();
+    }
+
+    return copia;
   }
 
   /**
@@ -126,7 +148,7 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public boolean isEmpty() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size == 0;
   }
 
   /**
@@ -135,7 +157,7 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public int size() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return size;
   }
 
   /**
@@ -144,7 +166,16 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void enqueue(T element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    Node<T> nuevo = new Node<>(element, null);
+
+    if(isEmpty()) {
+        first = nuevo;
+    } else {
+        last.next = nuevo;
+    }
+
+    last = nuevo;
+    size++;
   }
 
   /**
@@ -155,7 +186,8 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public T first() {
-    throw new UnsupportedOperationException("Not implemented yet");
+      if(isEmpty()) throw new EmptyQueueException("first on empty queue");
+    return first.element;
   }
 
   /**
@@ -166,7 +198,11 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void dequeue() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(isEmpty()) throw new EmptyQueueException("dequeue on empty queue");
+
+    first = first.next;
+    if(first == null) last = null;
+    size--;
   }
 
   /**
@@ -175,7 +211,9 @@ public class LinkedQueue<T> extends AbstractQueue<T> implements Queue<T> {
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = null;
+    last = null;
+    size = 0;
   }
 
   /**
