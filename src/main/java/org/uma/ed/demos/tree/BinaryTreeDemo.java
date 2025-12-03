@@ -24,7 +24,7 @@ public class BinaryTreeDemo {
     // ArrayList(3, 2, 5, 7, 6, 4, 1)
     System.out.println("The inorder traversal of the tree is: " + BinaryTree.inorder(tree));
     // ArrayList(3, 2, 1, 5, 4, 6, 7)
-    System.out.println("The breadth-first traversal of the tree is: " + BinaryTree.breadthFirst(tree));
+    //System.out.println("The breadth-first traversal of the tree is: " + BinaryTree.breadthFirst(tree));
     // ArrayList(1, 2, 4, 3, 5, 6, 7)
   }
 }

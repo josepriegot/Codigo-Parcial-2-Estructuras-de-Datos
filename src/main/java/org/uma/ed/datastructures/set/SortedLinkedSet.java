@@ -307,7 +307,8 @@ public class SortedLinkedSet<T> extends AbstractSortedSet<T> implements SortedSe
    */
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    first = null;
+    size = 0;
   }
 
   /**

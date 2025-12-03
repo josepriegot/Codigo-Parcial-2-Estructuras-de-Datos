@@ -3,9 +3,9 @@ package org.uma.ed.datastructures.tree;
 import org.uma.ed.datastructures.list.ArrayList;
 import org.uma.ed.datastructures.list.List;
 import org.uma.ed.datastructures.queue.ArrayQueue;
-import org.uma.ed.datastructures.queue.Queue;
 
 import java.util.Comparator;
+import java.util.Queue;
 
 /**
  * This class defines different methods to process binary trees. A binary tree is represented by a root node. If the
@@ -82,7 +82,8 @@ public class BinaryTree {
    * @return The number of nodes in the tree.
    */
   public static int size(Node<?> root) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (root == null) return 0;
+    return 1 + size(root.left) + size(root.right);
   }
 
   /**
@@ -93,7 +94,8 @@ public class BinaryTree {
    * @return The height of the tree.
    */
   public static int height(Node<?> root) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return 0;
+    return 1 + Math.max(height(root.left), height(root.right));
   }
 
   /**
@@ -104,7 +106,8 @@ public class BinaryTree {
    * @return The sum of the elements in the tree.
    */
   public static int sum(Node<Integer> root) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return 0;
+    return root.element + sum(root.left) + sum(root.right);
   }
 
   /**
@@ -116,7 +119,19 @@ public class BinaryTree {
    * @return The maximum element in the tree.
    */
   public static int maximum(Node<Integer> root, Comparator<Integer> comparator) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return 0;
+
+    int max = root.element;
+    if(root.left != null) {
+        int maxLeft = maximum(root.left, comparator);
+        if(comparator.compare(max, maxLeft) < 0) max = maxLeft;
+    }
+    if(root.right != null) {
+        int maxRight = maximum(root.right, comparator);
+        if(comparator.compare(max, maxRight) < 0) max = maxRight;
+    }
+
+    return max;
   }
 
   /**
@@ -128,7 +143,9 @@ public class BinaryTree {
    * @return The number of times the element appears in the tree.
    */
   public static int count(Node<Integer> root, int element) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return 0;
+    if(root.element == element) return 1 + count(root.left, element) + count(root.right, element);
+    else return count(root.left, element) + count(root.right, element);
   }
 
   /**
@@ -152,7 +169,12 @@ public class BinaryTree {
    * @param <T> The type of elements in the tree.
    */
   private static <T> void leaves(Node<T> root, List<T> leaves) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (root == null) return;
+    else if(root.right == null && root.left == null) leaves.append(root.element);
+    else {
+        leaves(root.left, leaves);
+        leaves(root.right, leaves);
+    }
   }
 
   /**
@@ -176,7 +198,10 @@ public class BinaryTree {
    * @param <T> The type of elements in the tree.
    */
   private static <T> void preorder(Node<T> root, List<T> traversal) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return;
+    traversal.append(root.element);
+    preorder(root.left, traversal);
+    preorder(root.right, traversal);
   }
 
   /**
@@ -200,7 +225,10 @@ public class BinaryTree {
    * @param <T> The type of elements in the tree.
    */
   private static <T> void postorder(Node<T> root, List<T> traversal) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return;
+    postorder(root.left, traversal);
+    postorder(root.right, traversal);
+    traversal.append(root.element);
   }
 
   /**
@@ -224,7 +252,10 @@ public class BinaryTree {
    * @param <T> The type of elements in the tree.
    */
   private static <T> void inorder(Node<T> root, List<T> traversal) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if(root == null) return;
+    inorder(root.left, traversal);
+    traversal.append(root.element);
+    inorder(root.right,traversal);
   }
 
   /**
@@ -234,7 +265,11 @@ public class BinaryTree {
    *
    * @return The breadth-first traversal of the tree.
    */
-  public static <T> List<T> breadthFirst(Node<T> root) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+  /* public static <T> List<T> breadthFirst(Node<T> root) {
+    List<T> resultado = ArrayList.empty();
+    if(root == null) return resultado;
+
+      Queue<Node<T>> queue = new ArrayQueue();
+      queue.e
+  } */
 }

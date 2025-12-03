@@ -147,6 +147,8 @@ public class ArrayStack<T> extends AbstractStack<T> implements Stack<T> {
    * @return a new ArrayStack with same elements and order as {@code that}.
    */
   public static <T> ArrayStack<T> copyOf(Stack<T> that) {
+    if(that.isEmpty()) return new ArrayStack<>();
+
     ArrayStack<T> copia = new ArrayStack<>(that.size());
     ArrayStack<T> aux = new ArrayStack<>();
 
